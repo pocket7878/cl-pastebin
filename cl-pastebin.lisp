@@ -1,26 +1,10 @@
-;;; -* Mode: Lisp; Package: COMMON-LISP-USER -*-
-
-;;;    cl-pastebin: Common Lisp Pastebin wrapper.
-;;;    Copyright (C) 2010 Masato Sogame (poketo7878@yahoo.co.jp)
-;;;
-;;;    This program is free software: you can redistribute it and/or modify
-;;;    it under the terms of the GNU General Public License as published by
-;;;    the Free Software Foundation, either version 3 of the License, or
-;;;    (at your option) any later version.
-;;;
-;;;    This program is distributed in the hope that it will be useful,
-;;;    but WITHOUT ANY WARRANTY; without even the implied warranty of
-;;;    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-;;;    GNU General Public License for more details.
-;;;
-;;;    You should have received a copy of the GNU General Public License
-;;;    along with this program.  If not, see <http://www.gnu.org/licenses/>.
-
 (in-package :cl-pastebin)
 
 (defvar *api-url* "http://pastebin.com/api_public.php")
 
 (defun paste-str (str &key (name "") (email "") (subdomain "") (private 0) (expire-date "N") (paste-format "text"))
+  (when (string= "" str)
+    (error "ERROR: Passed empty string."))
   (values 
     (http-request "http://pastebin.com/api_public.php"
 		  :method :post
