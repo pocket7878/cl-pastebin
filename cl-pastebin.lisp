@@ -4,22 +4,27 @@
 
 (defun paste-str (str &key (name "") (email "") (subdomain "") (private 0) (expire-date "N") (paste-format "text"))
   (when (string= "" str)
-    (error "ERROR: Passed empty string."))
-  (values 
-    (http-request "http://pastebin.com/api_public.php"
-		  :method :post
-		  :parameters `(("paste_code" . ,str)
-				("paste_name" . ,name)
-				("paste_email" . ,email)
-				("paste_subdomain" . ,subdomain)
-				("paste_private" . ,(write-to-string private))
-				("paste_expire_date"  . ,expire-date)
-				("paste_format" . ,paste-format)))))
+    (error "Error: Passed empty string."))
+  (let ((responce
+	  (http-request "http://pastebin.com/api_public.php"
+			:method :post
+			:parameters `(("paste_code" . ,str)
+				      ("paste_name" . ,name)
+				      ("paste_email" . ,email)
+				      ("paste_subdomain" . ,subdomain)
+				      ("paste_private" . ,(write-to-string private))
+				      ("paste_expire_date"  . ,expire-date)
+				      ("paste_format" . ,paste-format)))))
+    (if (string= "ERROR: Invalid file format" responce)
+      (error "Error: Invailed paste-format")
+      responce)))
 
 (defun file-to-str (file-path)
   (let ((acm nil))
     (with-open-file (fp file-path
 			:direction :input)
+      (when (zerop (file-length fp))
+	(error "Error: Passed empty file."))
       (loop for line = (read-line fp nil 'foo)
 	    until (eq line 'foo)
 	    do
